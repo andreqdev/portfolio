@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agência Hub · André Quinto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Direção: grafite com textura (grade e brilho laranja), um só acento laranja, blocos em cartões.
+     O produto aparece em telas claras, tratadas como vitrine. Capítulos com rótulo acima do título. */
+  :root {
+    --bg: #0B0C0F;
+    --raised: #131519;
+    --card: #15181D;
+    --line: rgba(255, 255, 255, 0.08);
+    --line-strong: rgba(255, 255, 255, 0.14);
+    --text: #EDEDEF;
+    --muted: #8E909B;
+    --accent: #FF6A3D;
+    --font-sans: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, "Cascadia Mono", monospace;
+
+    /* tokens do produto fictício (telas claras) */
+    --ui-bg: #F5F6F8;
+    --ui-panel: #FFFFFF;
+    --ui-ink: #14161B;
+    --ui-muted: #6B7080;
+    --ui-line: #E6E8EC;
+    --ui-accent: #E8501F;
+    --ui-accent-soft: #FFEDE6;
+    --ui-ok: #1F9D57;
+    --ui-ok-soft: #E6F6ED;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 17px; line-height: 1.6;
+         -webkit-font-smoothing: antialiased; overflow-x: hidden; word-spacing: 0.04em; }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  svg { max-width: 100%; }
+  .ic { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+  .wrap { width: min(1200px, 100% - 40px); margin-inline: auto; }
+  .mono { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  h1, h2, h3 { font-weight: 700; text-wrap: balance; word-spacing: 0.08em; }
+  .hl { color: var(--accent); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; position: relative; }
+  .card::after { content: ""; position: absolute; top: -1px; left: 24px; right: 24px; height: 1px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(255,106,61,.5), transparent); }
+
+  /* ---------- NAV ---------- */
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: 22px; border-bottom: 1px solid var(--line); }
+  .nav .name { font-weight: 600; letter-spacing: -0.01em; }
+  .nav .name span { color: var(--muted); font-weight: 400; }
+  .nav ul { display: flex; gap: 26px; list-style: none; font-size: 14px; color: var(--muted); }
+  .nav a:hover { color: var(--text); }
+  .avail { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); padding: 6px 12px; border: 1px solid var(--line-strong); border-radius: 999px; }
+  .avail::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #3DD68C; box-shadow: 0 0 0 3px rgba(61,214,140,.15); }
+
+  /* ---------- HERO ---------- */
+  .hero { padding-top: 88px; position: relative; isolation: isolate; }
+  .hero::before { content: ""; position: absolute; z-index: -1; left: calc(50% - 50vw); right: calc(50% - 50vw); top: -80px; height: 1100px;
+    background-image: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 60% 55% at 50% 30%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse 60% 55% at 50% 30%, #000 20%, transparent 75%); }
+  .hero::after { content: ""; position: absolute; z-index: -1; right: calc(50% - 50vw); top: -140px; width: 760px; height: 620px;
+    background: radial-gradient(closest-side, rgba(255,106,61,.13), transparent); }
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; }
+  .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(255,106,61,.15); }
+  .hero h1 { margin-top: 26px; font-size: clamp(44px, 7vw, 92px); font-weight: 800; line-height: 1; letter-spacing: -0.045em; max-width: 12ch; }
+  .hero-sub { margin-top: 30px; max-width: 58ch; font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); line-height: 1.55; }
+  .hero-sub b { color: var(--text); font-weight: 500; }
+  .facts { margin-top: 56px; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
+  .facts div { padding: 18px 20px 0 0; display: grid; gap: 6px; }
+  .facts div + div { padding-left: 20px; border-left: 1px solid var(--line); }
+  .facts dd { font-size: 15.5px; }
+
+  .stage { position: relative; margin-top: 72px; }
+  .stage::before { content: ""; position: absolute; left: 50%; top: 4%; width: 80%; height: 70%; transform: translateX(-50%);
+    background: radial-gradient(closest-side, rgba(255,106,61,.28), rgba(255,106,61,0) 100%); filter: blur(30px); z-index: 0; }
+  .bezel { position: relative; z-index: 1; padding: 10px; border-radius: 20px; background: rgba(255,255,255,.06);
+    box-shadow: 0 40px 120px -40px rgba(0,0,0,.9), inset 0 0 0 1px rgba(255,255,255,.06); }
+  .bezel .shot { border-radius: 12px; }
+  .float { position: absolute; z-index: 2; border-radius: 14px; font-size: 13px; line-height: 1.4; }
+  .float.notif { top: -26px; right: -18px; width: 300px; padding: 14px 16px; background: rgba(28, 30, 34, .82); backdrop-filter: blur(14px);
+    border: 1px solid var(--line-strong); box-shadow: 0 20px 50px -20px rgba(0,0,0,.8); display: grid; grid-template-columns: 34px 1fr; gap: 12px; }
+  .notif .app-ic { width: 34px; height: 34px; border-radius: 9px; background: var(--accent); display: grid; place-items: center; color: #fff; }
+  .notif small { color: var(--muted); font-size: 11.5px; display: flex; justify-content: space-between; }
+  .float.exec { left: 250px; bottom: -20px; padding: 10px 14px; background: #121418; border: 1px solid var(--line-strong);
+    font-family: var(--font-mono); font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 10px; box-shadow: 0 20px 50px -20px rgba(0,0,0,.8); }
+  .exec b { color: var(--text); font-weight: 500; }
+  .exec .ok { width: 8px; height: 8px; border-radius: 50%; background: #3DD68C; box-shadow: 0 0 0 3px rgba(61,214,140,.18); }
+  .exec .code { color: #3DD68C; }
+  .disclaimer { margin-top: 22px; font-size: 13.5px; color: var(--muted); display: flex; gap: 10px; align-items: baseline; }
+  .disclaimer::before { content: "*"; color: var(--accent); font-family: var(--font-mono); }
+
+  /* ---------- SECTIONS ---------- */
+  section { padding-block: 112px; position: relative; isolation: isolate; }
+  .band::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: calc(50% - 50vw); right: calc(50% - 50vw);
+    background: radial-gradient(900px 420px at 12% 0%, rgba(255,106,61,.06), transparent 70%), #0F1013;
+    border-block: 1px solid var(--line); }
+  .head { display: grid; gap: 18px; margin-bottom: 52px; }
+  .head .mono b { color: var(--accent); font-weight: 500; }
+  .head .txt { display: grid; gap: 16px; }
+  .head h2 { font-size: clamp(32px, 4.2vw, 52px); line-height: 1.06; letter-spacing: -0.035em; max-width: 20ch; }
+  .head p { color: var(--muted); max-width: 62ch; }
+
+  /* contexto */
+  .outcomes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .oc { padding: 26px; display: grid; gap: 8px; align-content: start; }
+  .oc .from { color: var(--muted); font-size: 15.5px; text-decoration: line-through; text-decoration-color: rgba(255,106,61,.5); }
+  .oc .to-l { margin-top: 12px; padding-top: 16px; border-top: 1px dashed var(--line-strong); color: var(--accent); }
+  .oc .to { font-size: 18px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.35; }
+
+  /* papel */
+  .numbers { display: grid; grid-template-columns: repeat(4, 1fr); margin-bottom: 16px; }
+  .numbers div { padding: 28px; display: grid; gap: 8px; }
+  .numbers div + div { border-left: 1px solid var(--line); }
+  .numbers b { font-size: clamp(40px, 5vw, 60px); font-weight: 700; letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .numbers b sup { font-size: 0.45em; color: var(--accent); vertical-align: 0.9em; margin-left: 2px; }
+  .numbers span { color: var(--muted); font-size: 14.5px; }
+  .roles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .role { padding: 28px; display: grid; gap: 14px; align-content: start; }
+  .rtop { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .ricon { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; color: var(--accent);
+    background: rgba(255,106,61,.1); border: 1px solid rgba(255,106,61,.28); }
+  .ricon .ic { width: 22px; height: 22px; }
+  .role h3 { font-size: 22px; letter-spacing: -0.025em; }
+  .role p { color: var(--muted); font-size: 15px; }
+  .role ul { list-style: none; display: grid; gap: 10px; font-size: 14.5px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .role li { display: flex; gap: 10px; }
+  .role li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); margin-top: 9px; flex: none; }
+  .infra-note { margin-top: 16px; font-size: 14px; color: var(--muted); padding: 16px 20px; border: 1px dashed var(--line-strong); border-radius: 14px; }
+  .infra-note b { color: var(--text); font-weight: 600; }
+
+  /* bento */
+  .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+  .tile { grid-column: span 6; background: var(--raised); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; }
+  .tile.w7 { grid-column: span 7; } .tile.w5 { grid-column: span 5; }
+  .tile-cap { padding: 28px 30px 24px; display: grid; gap: 8px; }
+  .tile-cap h3 { font-size: 21px; letter-spacing: -0.02em; }
+  .tile-cap p { color: var(--muted); font-size: 15px; max-width: 46ch; }
+  .tile-shot { margin-left: 30px; height: 360px; border-radius: 12px 0 0 0; overflow: hidden; border: 1px solid var(--line-strong); border-width: 1px 0 0 1px;
+    -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent); mask-image: linear-gradient(180deg, #000 70%, transparent); }
+
+  /* problemas */
+  .rows { border-top: 1px solid var(--line-strong); }
+  .row { display: grid; grid-template-columns: 52px 1.15fr 1fr 1fr 1fr; gap: 28px; padding: 30px 0; border-bottom: 1px solid var(--line); }
+  .row .idx { font-family: var(--font-mono); font-size: 13px; color: var(--accent); padding-top: 4px; }
+  .row h3 { font-size: 21px; line-height: 1.2; letter-spacing: -0.02em; }
+  .row h3 small { display: block; margin-top: 8px; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+  .cell { display: grid; gap: 6px; align-content: start; font-size: 15px; color: var(--muted); }
+  .cell .mono { font-size: 11px; }
+  .cell.res { color: var(--text); }
+  .cell.res .mono { color: var(--accent); }
+
+  /* arquitetura */
+  .arch { border: 1px solid var(--line); border-radius: 20px; padding: 36px 28px; overflow-x: auto;
+    background-color: var(--raised); background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.3px); background-size: 22px 22px; }
+  .arch svg { display: block; width: 100%; min-width: 760px; height: auto; }
+  .arch .t { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; fill: var(--muted); }
+  .arch .pill { fill: #16191D; stroke: var(--line-strong); }
+  .arch .lab { font-family: var(--font-sans); font-size: 14px; fill: var(--text); }
+  .arch .sub { font-family: var(--font-mono); font-size: 11px; fill: var(--muted); }
+  .arch .core { fill: #1A1310; stroke: var(--accent); stroke-width: 1.2; }
+  .arch .core-t { font-family: var(--font-sans); font-size: 20px; font-weight: 600; fill: var(--text); }
+  .arch .ln { fill: none; stroke: rgba(255,255,255,.16); stroke-width: 1.2; }
+  .arch .pulse { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 3 22; animation: flow 2.4s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -50; } }
+
+  /* aprendizados + stack */
+  .closing { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; align-items: start; }
+  .learn { grid-column: 1 / span 7; list-style: none; padding: 6px 28px; counter-reset: l; }
+  .learn li { padding: 22px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 36px 1fr; gap: 4px 12px; counter-increment: l; }
+  .learn li:last-child { border-bottom: 0; }
+  .learn li::before { content: counter(l, decimal-leading-zero); grid-row: 1 / 3; font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding-top: 5px; }
+  .learn b { font-size: 18px; font-weight: 600; letter-spacing: -0.015em; }
+  .learn p { color: var(--muted); font-size: 15px; max-width: 54ch; }
+  .stack { grid-column: 8 / -1; padding: 28px; display: grid; gap: 22px; align-content: start; }
+  .stack div { display: grid; gap: 10px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tags span { font-size: 13.5px; padding: 4px 10px; border-radius: 8px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+
+  /* ferramentas sob medida */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); margin-bottom: 40px; list-style: none; }
+  .steps li { position: relative; padding-right: 24px; display: grid; gap: 6px; align-content: start; }
+  .steps li::before { content: ""; position: absolute; top: 15px; left: 32px; right: 0; height: 1px; background: var(--line-strong); }
+  .steps li:last-child::before { display: none; }
+  .steps .dot { position: relative; width: 31px; height: 31px; border-radius: 50%; display: grid; place-items: center; margin-bottom: 12px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text); background: var(--bg); border: 1px solid var(--line-strong); }
+  .steps li:last-child .dot { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .steps b { font-size: 17px; font-weight: 600; letter-spacing: -0.015em; }
+  .steps p { color: var(--muted); font-size: 14.5px; max-width: 26ch; }
+  .tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .tool { padding: 26px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 10px; }
+  .tool h3 { font-size: 19px; letter-spacing: -0.02em; }
+  .tool > p { color: var(--muted); font-size: 15px; }
+  .tool .who { margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; }
+  .tool .who .mono { font-size: 11px; }
+
+  /* contato */
+  #contato { padding-top: 16px; }
+  #contato::before { content: ""; position: absolute; z-index: -1; left: 2%; right: 2%; top: -70px; bottom: 30px;
+    background: radial-gradient(closest-side, rgba(255,106,61,.2), transparent); filter: blur(24px); }
+  .contact { padding: 56px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: end; }
+  .contact h2 { font-size: clamp(34px, 4.4vw, 56px); line-height: 1.04; letter-spacing: -0.04em; margin-top: 14px; max-width: 14ch; }
+  .contact .lead { color: var(--muted); margin-top: 18px; max-width: 46ch; }
+  .clinks { display: grid; gap: 12px; }
+  .clink { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 16px; padding: 18px 20px; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--bg); }
+  .clink .mono { grid-column: 1; font-size: 11px; }
+  .clink a, .clink .val { grid-column: 1; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; word-break: break-all; }
+  .clink a:hover { color: var(--accent); }
+  .clink button, .clink .go { grid-column: 2; grid-row: 1 / 3; font: 500 13px var(--font-sans); color: var(--text); background: transparent;
+    border: 1px solid var(--line-strong); border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+  .clink button:hover, .clink .go:hover { border-color: var(--accent); color: var(--accent); }
+  footer { padding-block: 28px 44px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+
+  /* ---------- PRODUTO (mock) ---------- */
+  .shot { position: relative; overflow: hidden; background: var(--ui-bg); }
+  .ui { transform-origin: 0 0; color: var(--ui-ink); font-family: var(--font-sans); font-size: 13px; line-height: 1.45; background: var(--ui-bg); }
+  .ui .ic { width: 15px; height: 15px; }
+  .app { display: grid; grid-template-columns: 220px 1fr; min-height: 640px; }
+  .side { background: var(--ui-panel); border-right: 1px solid var(--ui-line); padding: 18px 14px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 18px; }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 14.5px; letter-spacing: -0.01em; padding: 0 6px; }
+  .mark { width: 22px; height: 22px; border-radius: 7px; background: var(--ui-accent); position: relative; }
+  .mark::after { content: ""; position: absolute; inset: 6px; border-radius: 3px; background: #fff; opacity: .9; }
+  .switch { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; padding: 9px 10px; border: 1px solid var(--ui-line); border-radius: 10px; color: var(--ui-muted); }
+  .co { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; background: #FDE7C8; color: #8A4B0F; font-weight: 600; font-size: 11px; }
+  .switch b { display: block; color: var(--ui-ink); font-weight: 500; font-size: 13px; }
+  .switch small { font-size: 11.5px; }
+  .snav { display: grid; gap: 2px; align-content: start; }
+  .snav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: var(--ui-muted); font-size: 13.5px; }
+  .snav a.on { background: var(--ui-bg); color: var(--ui-ink); font-weight: 500; }
+  .snav .cnt { margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--ui-accent); color: #fff; font-size: 11px; font-weight: 600; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+  .me { display: flex; gap: 10px; align-items: center; padding: 10px 8px 0; border-top: 1px solid var(--ui-line); }
+  .av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 600; color: #fff; background: #C2477A; flex: none; }
+  .me b { display: block; font-weight: 500; font-size: 13px; }
+  .me small { color: var(--ui-muted); font-size: 11.5px; }
+  .main { display: grid; grid-template-rows: auto 1fr; }
+  .top { display: flex; align-items: center; gap: 16px; padding: 14px 26px; border-bottom: 1px solid var(--ui-line); background: var(--ui-panel); }
+  .crumb { font-weight: 500; }
+  .search { margin-left: auto; display: flex; align-items: center; gap: 8px; width: 300px; padding: 7px 12px; border: 1px solid var(--ui-line); border-radius: 9px; color: var(--ui-muted); font-size: 12.5px; }
+  .bell { position: relative; color: var(--ui-muted); display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--ui-line); border-radius: 9px; }
+  .bell i { position: absolute; top: 7px; right: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--ui-accent); border: 1.5px solid #fff; }
+  .content { padding: 26px; display: grid; gap: 22px; align-content: start; }
+  .greet h4 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+  .greet p { color: var(--ui-muted); margin-top: 2px; }
+  .cols { display: grid; grid-template-columns: 1fr 290px; gap: 22px; align-items: start; }
+  .lbl { font-size: 11.5px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--ui-muted); margin-bottom: 10px; }
+  .attn { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
+  .acard { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 14px; padding: 16px; display: grid; gap: 4px; align-content: start; box-shadow: 0 1px 2px rgba(20,22,27,.04); }
+  .acard.hot { border-color: #FFC9B5; box-shadow: 0 0 0 3px var(--ui-accent-soft); }
+  .ah { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .aic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: var(--ui-accent-soft); color: var(--ui-accent); }
+  .anum { font-size: 30px; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .acard b { font-size: 14px; font-weight: 600; }
+  .acard small { color: var(--ui-muted); font-size: 12px; }
+  .thumbs { display: flex; margin: 12px 0 14px; }
+  .thumbs i { width: 42px; height: 42px; border-radius: 9px; border: 2px solid #fff; margin-right: -8px; display: grid; place-items: center; font-style: normal; font-size: 11px; font-weight: 600; color: var(--ui-muted); background: var(--ui-bg); }
+  .p1 { background: linear-gradient(135deg, #F4A259, #E76F51) !important; }
+  .p2 { background: linear-gradient(135deg, #2A9D8F, #264653) !important; }
+  .p3 { background: linear-gradient(135deg, #E07A9C, #8E3B6C) !important; }
+  .quote { margin: 10px 0 14px; padding: 10px 12px; border-radius: 9px; background: var(--ui-bg); color: var(--ui-muted); font-size: 12.5px; }
+  .abtn { justify-self: start; padding: 7px 14px; border-radius: 8px; background: var(--ui-ink); color: #fff; font-weight: 500; font-size: 12.5px; }
+  .abtn.ghost { background: transparent; color: var(--ui-ink); border: 1px solid var(--ui-line); }
+  .svc { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .svc div { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 12px; padding: 14px; display: grid; gap: 2px; color: var(--ui-muted); }
+  .svc b { color: var(--ui-ink); font-weight: 500; margin-top: 8px; }
+  .svc small { font-size: 12px; }
+  .act { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 14px; padding: 16px; }
+  .act ul { list-style: none; display: grid; gap: 14px; }
+  .act li { display: grid; grid-template-columns: 10px 1fr; gap: 10px; font-size: 12.5px; }
+  .act li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; background: var(--ui-line); }
+  .act li.ok::before { background: var(--ui-ok); }
+  .act li.wait::before { background: var(--ui-accent); }
+  .act li small { display: block; color: var(--ui-muted); font-size: 11.5px; }
+
+  .solo { padding: 22px; display: grid; gap: 16px; align-content: start; }
+  .ph { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .ph h4 { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+  .ph small { color: var(--ui-muted); font-size: 12px; display: block; font-weight: 400; letter-spacing: 0; }
+  .seg { display: flex; gap: 4px; padding: 3px; background: #ECEEF2; border-radius: 9px; }
+  .seg span { padding: 5px 11px; border-radius: 7px; font-size: 12px; color: var(--ui-muted); display: flex; gap: 6px; align-items: center; }
+  .seg span.on { background: #fff; color: var(--ui-ink); font-weight: 500; box-shadow: 0 1px 2px rgba(20,22,27,.08); }
+  .seg em { font-style: normal; font-variant-numeric: tabular-nums; font-size: 11px; color: var(--ui-accent); font-weight: 600; }
+  .btn-dark { padding: 7px 13px; border-radius: 8px; background: var(--ui-ink); color: #fff; font-size: 12px; font-weight: 500; }
+
+  .mgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .mcard { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 14px; overflow: hidden; }
+  .poster { height: 150px; padding: 14px; display: grid; align-content: space-between; color: #fff; }
+  .poster small { font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; opacity: .85; font-weight: 500; }
+  .poster b { font-weight: 800; font-size: 22px; line-height: 1.05; letter-spacing: -0.03em; }
+  .mbody { padding: 12px 14px 14px; display: grid; gap: 4px; }
+  .mbody b { font-size: 13px; font-weight: 600; }
+  .mbody small { color: var(--ui-muted); font-size: 11.5px; }
+  .status { justify-self: start; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 999px; margin-bottom: 4px; }
+  .status.wait { background: var(--ui-accent-soft); color: var(--ui-accent); }
+  .status.ok { background: var(--ui-ok-soft); color: var(--ui-ok); }
+  .mact { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
+  .mact span { padding: 6px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 500; border: 1px solid var(--ui-line); color: var(--ui-ink); }
+  .mact span.go { background: var(--ui-ink); border-color: var(--ui-ink); color: #fff; }
+
+  table.users { width: 100%; border-collapse: collapse; background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 12px; overflow: hidden; font-size: 12.5px; }
+  .users th { text-align: left; font-size: 11px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; color: var(--ui-muted); padding: 10px 12px; border-bottom: 1px solid var(--ui-line); background: #FAFBFC; }
+  .users td { padding: 11px 12px; border-bottom: 1px solid var(--ui-line); vertical-align: middle; }
+  .users tr:last-child td { border-bottom: 0; }
+  .who { display: flex; align-items: center; gap: 9px; }
+  .who .av { width: 26px; height: 26px; font-size: 10px; }
+  .who small { display: block; color: var(--ui-muted); font-size: 11px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chips span { font-size: 11px; border: 1px solid var(--ui-line); border-radius: 999px; padding: 1px 8px; color: var(--ui-muted); white-space: nowrap; }
+  .chips span.main { border-color: #FFC9B5; background: var(--ui-accent-soft); color: var(--ui-accent); }
+
+  .eval { position: relative; }
+  .list { display: grid; gap: 10px; }
+  .req { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 12px; padding: 13px 14px; display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; }
+  .req b { font-size: 13px; font-weight: 600; }
+  .req small { color: var(--ui-muted); font-size: 11.5px; }
+  .req .status { grid-row: 1; grid-column: 2; margin: 0; }
+  .scrim { position: absolute; inset: 0; background: rgba(20,22,27,.38); }
+  .modal { position: absolute; left: 50%; top: 70px; transform: translateX(-50%); width: 430px; background: var(--ui-panel); border-radius: 14px; padding: 18px; display: grid; gap: 12px;
+           box-shadow: 0 30px 60px -20px rgba(20,22,27,.45); }
+  .modal h5 { font-size: 15px; font-weight: 600; }
+  .modal h5 small { display: block; font-weight: 400; font-size: 12px; color: var(--ui-muted); }
+  .ta { border: 1px solid var(--ui-line); border-radius: 9px; padding: 10px 12px; font-size: 12.5px; min-height: 64px; color: var(--ui-ink); }
+  .file { display: flex; align-items: center; gap: 10px; border: 1px solid #BFE6CF; background: var(--ui-ok-soft); border-radius: 9px; padding: 8px 10px; font-size: 12.5px; }
+  .file .ext { font-size: 10px; font-weight: 700; color: #fff; background: var(--ui-ok); border-radius: 5px; padding: 3px 6px; }
+  .file span:last-child { margin-left: auto; color: var(--ui-muted); font-variant-numeric: tabular-nums; }
+  .mbtns { display: flex; justify-content: flex-end; gap: 8px; }
+  .mbtns span { padding: 7px 13px; border-radius: 8px; font-size: 12px; font-weight: 500; border: 1px solid var(--ui-line); }
+  .mbtns span.go { background: var(--ui-accent); border-color: var(--ui-accent); color: #fff; }
+
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .kpi { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 12px; padding: 14px; display: grid; gap: 2px; }
+  .kpi small { color: var(--ui-muted); font-size: 12px; }
+  .kpi b { font-size: 24px; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .kpi em { font-style: normal; font-size: 11.5px; color: var(--ui-ok); font-weight: 500; }
+  .chart { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 12px; padding: 14px 16px 10px; }
+  .legend { display: flex; gap: 16px; font-size: 11.5px; color: var(--ui-muted); margin-bottom: 6px; }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .legend i { width: 14px; height: 2px; background: var(--ui-accent); display: block; }
+  .legend i.prev { background: none; border-top: 2px dashed #A3A8B5; }
+  .chart svg { display: block; width: 100%; height: auto; }
+  .chart .g { stroke: var(--ui-line); }
+  .chart .tx { font-family: var(--font-mono); font-size: 10px; fill: var(--ui-muted); }
+
+  /* ---------- RESPONSIVO ---------- */
+  @media (max-width: 1000px) {
+    .outcomes { grid-template-columns: 1fr; }
+    .roles { grid-template-columns: 1fr; }
+    .tools { grid-template-columns: 1fr 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; gap: 28px 0; }
+    .steps li:nth-child(2)::before { display: none; }
+    .contact { grid-template-columns: 1fr; padding: 40px; }
+    .tile, .tile.w7, .tile.w5 { grid-column: 1 / -1; }
+    .row { grid-template-columns: 40px 1fr 1fr; }
+    .row h3 { grid-column: 2 / -1; }
+    .row .cell { grid-column: 2 / -1; }
+    .learn, .stack { grid-column: 1 / -1; }
+    .float.notif { right: 8px; }
+    .float.exec { left: 8px; }
+  }
+  @media (max-width: 760px) {
+    body { font-size: 16px; }
+    .nav ul { display: none; }
+    .nav .name span { display: none; }
+    .hero { padding-top: 56px; }
+    section { padding-block: 80px; }
+    .facts, .numbers { grid-template-columns: 1fr 1fr; }
+    .facts div:nth-child(3) { padding-left: 0; border-left: 0; }
+    .numbers div:nth-child(3) { border-left: 0; }
+    .facts div:nth-child(n+3) { padding-top: 18px; }
+    .numbers div:nth-child(n+3) { border-top: 1px solid var(--line); }
+    .numbers div { padding: 22px; }
+    .role, .oc, .stack { padding: 22px; }
+    .learn { padding: 4px 22px; }
+    .tools { grid-template-columns: 1fr; }
+    .tool { padding: 22px; }
+    .contact { padding: 26px; }
+    .float { display: none; }
+    .tile-cap { padding: 22px 22px 20px; }
+    .tile-shot { margin-left: 22px; height: 260px; }
+    .row { grid-template-columns: 1fr; gap: 14px; }
+    .row h3, .row .cell { grid-column: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .arch .pulse { animation: none; stroke-dasharray: none; opacity: .5; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13l2.5 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.6.3-1 .8-1 1.4v.6M12 17h.01"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 6 2.5 8 2.5 8h-17S6 15 6 9"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6M4 11.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+  <symbol id="i-flow" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><path d="M10 6.5h3.5a3 3 0 0 1 3 3V14"/></symbol>
+  <symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18M9 9v11"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4.2a4 4 0 0 1 0 7.6M22 21a7 7 0 0 0-4-6.3"/></symbol>
+</svg>
+
+<div class="wrap">
+  <nav class="nav" aria-label="Seções">
+    <span class="name">André Quinto <span>· Automação e Integrações</span></span>
+    <ul>
+      <li><a href="#papel">Papel</a></li>
+      <li><a href="#produto">Produto</a></li>
+      <li><a href="#ferramentas">Ferramentas</a></li>
+      <li><a href="#solucoes">Soluções</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+    <a class="avail" href="#contato">Disponível para projetos</a>
+  </nav>
+
+  <header class="hero">
+    <p class="mono eyebrow">Estudo de caso · Agência Hub · 2026</p>
+    <h1>Do banco de dados à <span class="hl">tela do cliente.</span></h1>
+    <p class="hero-sub">Construí a <b>Agência Hub</b>, a plataforma onde uma agência de marketing e seus clientes aprovam materiais, acompanham pedidos e veem resultados. <b>Modelei os dados, criei as automações e desenhei as telas.</b></p>
+
+    <dl class="facts">
+      <div><dt class="mono">Papel</dt><dd>Automação, dados e front-end</dd></div>
+      <div><dt class="mono">Escopo</dt><dd>17 módulos</dd></div>
+      <div><dt class="mono">Usuários</dt><dd>Clientes, equipe e administração</dd></div>
+      <div><dt class="mono">Stack</dt><dd>n8n · MySQL · JavaScript · APIs REST</dd></div>
+    </dl>
+
+    <div class="stage">
+      <div class="bezel">
+        <div class="shot">
+          <div class="ui" data-w="1180" style="width:1180px">
+            <div class="app">
+              <aside class="side">
+                <div class="brand"><span class="mark"></span>Agência Hub</div>
+                <div class="switch"><span class="co">PA</span><span><b>Padaria Aurora</b><small>3 serviços ativos</small></span><svg class="ic"><use href="#i-chev"/></svg></div>
+                <nav class="snav" aria-hidden="true">
+                  <a class="on"><svg class="ic"><use href="#i-home"/></svg>Início</a>
+                  <a><svg class="ic"><use href="#i-check"/></svg>Aprovações<span class="cnt">4</span></a>
+                  <a><svg class="ic"><use href="#i-inbox"/></svg>Solicitações<span class="cnt">1</span></a>
+                  <a><svg class="ic"><use href="#i-chart"/></svg>Mídia paga</a>
+                  <a><svg class="ic"><use href="#i-file"/></svg>Relatórios</a>
+                  <a><svg class="ic"><use href="#i-cal"/></svg>Cronograma</a>
+                  <a><svg class="ic"><use href="#i-help"/></svg>Ajuda</a>
+                </nav>
+                <div class="me"><span class="av">MS</span><span><b>Marina Souza</b><small>Cliente</small></span></div>
+              </aside>
+              <div class="main">
+                <div class="top">
+                  <span class="crumb">Início</span>
+                  <span class="search"><svg class="ic"><use href="#i-search"/></svg>Buscar materiais e pedidos</span>
+                  <span class="bell"><svg class="ic"><use href="#i-bell"/></svg><i></i></span>
+                </div>
+                <div class="content">
+                  <div class="greet"><h4>Bom dia, Marina</h4><p>Quarta-feira, 12 de março · 5 itens dependem de você</p></div>
+                  <div class="cols">
+                    <div>
+                      <p class="lbl">Precisa da sua atenção</p>
+                      <div class="attn">
+                        <div class="acard hot">
+                          <div class="ah"><span class="aic"><svg class="ic"><use href="#i-check"/></svg></span><span class="anum">4</span></div>
+                          <b>Materiais para aprovar</b><small>2 com prazo amanhã</small>
+                          <div class="thumbs"><i class="p1"></i><i class="p2"></i><i class="p3"></i><i>+1</i></div>
+                          <span class="abtn">Revisar agora</span>
+                        </div>
+                        <div class="acard">
+                          <div class="ah"><span class="aic"><svg class="ic"><use href="#i-inbox"/></svg></span><span class="anum">1</span></div>
+                          <b>Pedido aguardando você</b><small>Nova página de cardápio</small>
+                          <p class="quote">A equipe pediu as fotos dos produtos e a tabela de preços atualizada.</p>
+                          <span class="abtn ghost">Responder</span>
+                        </div>
+                      </div>
+                      <p class="lbl">Seus serviços</p>
+                      <div class="svc">
+                        <div><svg class="ic"><use href="#i-chart"/></svg><b>Mídia paga</b><small>372 leads em março</small></div>
+                        <div><svg class="ic"><use href="#i-file"/></svg><b>Relatórios</b><small>Fevereiro disponível</small></div>
+                        <div><svg class="ic"><use href="#i-cal"/></svg><b>Cronograma</b><small>Fase 3 de 5</small></div>
+                      </div>
+                    </div>
+                    <div class="act">
+                      <p class="lbl">Atividade recente</p>
+                      <ul>
+                        <li class="ok"><span>Carrossel “Fornada de sábado” aprovado<small>Marina · 09:12</small></span></li>
+                        <li class="wait"><span>Equipe pediu informações em “Nova página de cardápio”<small>Luana · 08:40</small></span></li>
+                        <li class="wait"><span>Anúncio “Café da manhã” enviado para aprovação<small>Equipe · ontem</small></span></li>
+                        <li><span>Relatório de fevereiro disponível<small>Automático · ontem</small></span></li>
+                        <li class="ok"><span>Solicitação “Campanha de Páscoa” concluída<small>Equipe · seg</small></span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="float notif" aria-hidden="true">
+        <span class="app-ic"><svg class="ic"><use href="#i-bell"/></svg></span>
+        <span><small><span>Agência Hub</span><span>agora</span></small>4 materiais aguardam sua aprovação. Toque para revisar.</span>
+      </div>
+      <div class="float exec" aria-hidden="true"><span class="ok"></span><b>POST</b> /webhook/aprovar <span class="code">200</span> 284 ms</div>
+    </div>
+    <p class="disclaimer">Nome, marca, telas e dados são fictícios. O projeto é real e está descrito sem informações confidenciais.</p>
+  </header>
+
+  <main>
+
+    <section id="contexto">
+      <div class="head">
+        <p class="mono"><b>01</b> / Contexto</p>
+        <div class="txt">
+          <h2>A operação vivia espalhada em <span class="hl">conversas e planilhas.</span></h2>
+          <p>Uma agência atende dezenas de clientes ao mesmo tempo. Aprovações, pedidos e ajustes circulavam por mensagens, e-mails e planilhas, e ninguém via com clareza o que estava parado esperando quem.</p>
+        </div>
+      </div>
+      <div class="outcomes">
+        <article class="card oc"><p class="mono">Antes</p><p class="from">Material aprovado por mensagem solta</p><p class="mono to-l">Depois</p><p class="to">Aprovação com um clique, registrada na tarefa</p></article>
+        <article class="card oc"><p class="mono">Antes</p><p class="from">Pedidos perdidos no histórico do chat</p><p class="mono to-l">Depois</p><p class="to">Solicitações com etapa, prazo e responsável</p></article>
+        <article class="card oc"><p class="mono">Antes</p><p class="from">Cliente sem saber o que depende dele</p><p class="mono to-l">Depois</p><p class="to">Pendências na primeira tela que ele abre</p></article>
+      </div>
+    </section>
+
+    <section id="papel" class="band">
+      <div class="head">
+        <p class="mono"><b>02</b> / Meu papel</p>
+        <div class="txt">
+          <h2>Três frentes, <span class="hl">um mesmo sistema.</span></h2>
+          <p>Atuei como analista de automação e integrações, com autonomia para propor, construir e manter. A maior parte da arquitetura de dados e das integrações foi desenhada por mim.</p>
+        </div>
+      </div>
+      <div class="card numbers">
+        <div><b>17</b><span>módulos construídos ou evoluídos</span></div>
+        <div><b>35</b><span>endpoints de automação</span></div>
+        <div><b>10<sup>+</sup></b><span>sistemas integrados</span></div>
+        <div><b>3</b><span>perfis de acesso</span></div>
+      </div>
+      <div class="roles">
+        <article class="card role">
+          <div class="rtop"><span class="ricon"><svg class="ic"><use href="#i-db"/></svg></span><p class="mono">01 · Dados</p></div>
+          <h3>Arquitetura do banco</h3>
+          <p>Modelei a estrutura que sustenta a plataforma.</p>
+          <ul><li>Usuários, papéis e vínculo com várias empresas</li><li>Catálogo de serviços e permissões</li><li>Configurações de aviso por cliente</li><li>Índices e ajustes de desempenho</li></ul>
+        </article>
+        <article class="card role">
+          <div class="rtop"><span class="ricon"><svg class="ic"><use href="#i-flow"/></svg></span><p class="mono">02 · Automação</p></div>
+          <h3>Backend em fluxos</h3>
+          <p>Escrevi os fluxos que servem as telas e os que rodam sozinhos.</p>
+          <ul><li>Webhooks com autenticação por token</li><li>Gestor de tarefas, Drive, CRM e anúncios</li><li>Rotinas agendadas e avisos por WhatsApp</li><li>Tratamento de falhas e novas tentativas</li></ul>
+        </article>
+        <article class="card role">
+          <div class="rtop"><span class="ricon"><svg class="ic"><use href="#i-layout"/></svg></span><p class="mono">03 · Interface</p></div>
+          <h3>Telas da plataforma</h3>
+          <p>Construí as telas a partir dos pedidos da equipe e dos clientes.</p>
+          <ul><li>Portal do cliente completo</li><li>Gestão de acessos e serviços</li><li>Dashboards de mídia paga</li><li>Configuração de follow-up de leads</li></ul>
+        </article>
+      </div>
+      <p class="infra-note"><b>Fora do meu escopo:</b> a infraestrutura (servidores e banco em produção) ficava com outro profissional do time. Eu modelava, integrava e publicava sobre ela.</p>
+    </section>
+
+    <section id="produto">
+      <div class="head">
+        <p class="mono"><b>03</b> / Produto</p>
+        <div class="txt">
+          <h2>As telas que <span class="hl">mais usam.</span></h2>
+          <p>Recriadas com identidade e dados fictícios, fiéis à estrutura e ao comportamento das telas reais.</p>
+        </div>
+      </div>
+      <div class="bento">
+
+        <article class="tile w7">
+          <div class="tile-cap"><p class="mono">Portal do cliente</p><h3>Aprovação em um clique</h3><p>O cliente vê a peça, aprova ou pede ajuste. A decisão volta para a tarefa da equipe com quem aprovou e quando.</p></div>
+          <div class="tile-shot"><div class="shot">
+            <div class="ui" data-w="820" style="width:820px">
+              <div class="solo">
+                <div class="ph"><h4>Aprovações</h4><div class="seg"><span class="on">Aguardando <em>4</em></span><span>Em ajuste <em>1</em></span><span>Aprovados</span></div></div>
+                <div class="mgrid">
+                  <div class="mcard"><div class="poster p1"><small>Padaria Aurora</small><b>Fornada de domingo</b></div><div class="mbody"><span class="status wait">Aguardando você</span><b>Carrossel · Instagram</b><small>5 imagens · enviado hoje</small><div class="mact"><span>Pedir ajuste</span><span class="go">Aprovar</span></div></div></div>
+                  <div class="mcard"><div class="poster p2"><small>Padaria Aurora</small><b>Café da manhã em casa</b></div><div class="mbody"><span class="status wait">Prazo amanhã</span><b>Anúncio · vídeo 15s</b><small>Versão 2 · ajuste de texto</small><div class="mact"><span>Pedir ajuste</span><span class="go">Aprovar</span></div></div></div>
+                  <div class="mcard"><div class="poster p3"><small>Padaria Aurora</small><b>Doces de Páscoa</b></div><div class="mbody"><span class="status ok">Aprovado</span><b>Post · feed</b><small>Marina · 09:12</small><div class="mact"><span>Ver peça</span><span>Histórico</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div></div>
+        </article>
+
+        <article class="tile w5">
+          <div class="tile-cap"><p class="mono">Administração</p><h3>Uma pessoa, várias empresas</h3><p>Empresa principal e vínculos extras. O portal troca de contexto sem novo login.</p></div>
+          <div class="tile-shot"><div class="shot">
+            <div class="ui" data-w="600" style="width:600px">
+              <div class="solo">
+                <div class="ph"><h4>Usuários<small>48 ativos · 3 aguardando aprovação</small></h4><span class="btn-dark">Convidar</span></div>
+                <table class="users">
+                  <thead><tr><th>Usuário</th><th>Empresas</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="who"><span class="av">MS</span><span>Marina Souza<small>Cliente</small></span></span></td><td><span class="chips"><span class="main">Padaria Aurora</span><span>Bistrô Lume</span></span></td></tr>
+                    <tr><td><span class="who"><span class="av" style="background:#2A4B9B">RT</span><span>Rafael Torres<small>Cliente</small></span></span></td><td><span class="chips"><span class="main">Ótica Prisma</span></span></td></tr>
+                    <tr><td><span class="who"><span class="av" style="background:#2E7D6F">LC</span><span>Luana Costa<small>Equipe</small></span></span></td><td><span class="chips"><span>Todas as empresas</span></span></td></tr>
+                    <tr><td><span class="who"><span class="av" style="background:#8A6A2E">PB</span><span>Pedro Brandão<small>Cliente</small></span></span></td><td><span class="chips"><span class="main">Studio Vértice</span><span>Vértice Kids</span></span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div></div>
+        </article>
+
+        <article class="tile w5">
+          <div class="tile-cap"><p class="mono">Operação da equipe</p><h3>Pedido de informações com anexo</h3><p>O PDF vai para a pasta da solicitação e aparece como botão para o cliente.</p></div>
+          <div class="tile-shot"><div class="shot">
+            <div class="ui" data-w="600" style="width:600px">
+              <div class="solo eval">
+                <div class="ph"><h4>Solicitações</h4><div class="seg"><span class="on">Em avaliação <em>3</em></span><span>Aguardando</span></div></div>
+                <div class="list">
+                  <div class="req"><b>Campanha de Dia das Mães</b><span class="status wait">Em avaliação</span><small>Padaria Aurora · prazo 12/05</small></div>
+                  <div class="req"><b>Nova página de cardápio</b><span class="status wait">Em avaliação</span><small>Bistrô Lume · prazo 15/05</small></div>
+                  <div class="req"><b>E-mail de reativação</b><span class="status wait">Em avaliação</span><small>Ótica Prisma · prazo 18/05</small></div>
+                  <div class="req"><b>Landing page de inverno</b><span class="status wait">Em avaliação</span><small>Studio Vértice · prazo 20/05</small></div>
+                </div>
+                <div class="scrim"></div>
+                <div class="modal">
+                  <h5>Pedir informações<small>Nova página de cardápio · Bistrô Lume</small></h5>
+                  <div class="ta">Precisamos das fotos dos produtos em boa resolução e da tabela de preços. Marquei os pontos no PDF.</div>
+                  <div class="file"><span class="ext">PDF</span><span>pontos-de-ajuste.pdf</span><span>320 KB</span></div>
+                  <div class="mbtns"><span>Cancelar</span><span class="go">Enviar ao cliente</span></div>
+                </div>
+              </div>
+            </div>
+          </div></div>
+        </article>
+
+        <article class="tile w7">
+          <div class="tile-cap"><p class="mono">Mídia paga</p><h3>Resultados sem planilha</h3><p>Métricas de Meta Ads e Google Ads coletadas, normalizadas e guardadas por automações.</p></div>
+          <div class="tile-shot"><div class="shot">
+            <div class="ui" data-w="820" style="width:820px">
+              <div class="solo">
+                <div class="ph"><h4>Mídia paga<small>Padaria Aurora · março</small></h4><div class="seg"><span class="on">Meta Ads</span><span>Google Ads</span></div></div>
+                <div class="kpis">
+                  <div class="kpi"><small>Leads</small><b>372</b><em>+27% vs. fevereiro</em></div>
+                  <div class="kpi"><small>Custo por lead</small><b>R$ 7,88</b><em>−14% vs. fevereiro</em></div>
+                  <div class="kpi"><small>Investimento</small><b>R$ 2.933</b><em style="color: var(--ui-muted)">dentro do previsto</em></div>
+                </div>
+                <div class="chart">
+                  <div class="legend"><span><i></i>Março</span><span><i class="prev"></i>Fevereiro</span></div>
+                  <svg viewBox="0 0 760 170" role="img" aria-label="Leads por semana. Março: 52, 64, 72, 88 e 96. Fevereiro: 50, 54, 60, 58 e 70.">
+                    <defs><linearGradient id="fillA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8501F" stop-opacity=".22"/><stop offset="1" stop-color="#E8501F" stop-opacity="0"/></linearGradient></defs>
+                    <line class="g" x1="40" y1="20" x2="750" y2="20"/><line class="g" x1="40" y1="60" x2="750" y2="60"/><line class="g" x1="40" y1="100" x2="750" y2="100"/><line class="g" x1="40" y1="140" x2="750" y2="140"/>
+                    <text class="tx" x="10" y="24">120</text><text class="tx" x="16" y="64">80</text><text class="tx" x="16" y="104">40</text><text class="tx" x="24" y="144">0</text>
+                    <path d="M60 88 L230 76 L400 68 L570 52 L740 44 L740 140 L60 140 Z" fill="url(#fillA)"/>
+                    <path d="M60 90 L230 86 L400 80 L570 82 L740 70" fill="none" stroke="#A3A8B5" stroke-width="1.6" stroke-dasharray="4 4"/>
+                    <path d="M60 88 L230 76 L400 68 L570 52 L740 44" fill="none" stroke="#E8501F" stroke-width="2.4" stroke-linejoin="round"/>
+                    <circle cx="740" cy="44" r="5" fill="#fff" stroke="#E8501F" stroke-width="2.4"/>
+                    <text class="tx" x="690" y="32" style="fill:#14161B">96 leads</text>
+                    <text class="tx" x="46" y="162">sem 1</text><text class="tx" x="216" y="162">sem 2</text><text class="tx" x="386" y="162">sem 3</text><text class="tx" x="556" y="162">sem 4</text><text class="tx" x="716" y="162">sem 5</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div></div>
+        </article>
+
+      </div>
+    </section>
+
+    <section id="ferramentas" class="band">
+      <div class="head">
+        <p class="mono"><b>04</b> / Ferramentas sob medida</p>
+        <div class="txt">
+          <h2>Cada pedido da equipe <span class="hl">virou uma ferramenta.</span></h2>
+          <p>Conforme as necessidades surgiam, eu conversava com quem ia usar, prototipava e colocava em produção dentro do hub. Sem sistema de prateleira, sem planilha paralela.</p>
+        </div>
+      </div>
+      <ol class="steps">
+        <li><span class="dot">1</span><b>Pedido da equipe</b><p>Alguém esbarra numa tarefa manual ou repetitiva e me procura.</p></li>
+        <li><span class="dot">2</span><b>Conversa</b><p>Entendo o fluxo com quem vai usar, antes de escrever código.</p></li>
+        <li><span class="dot">3</span><b>Protótipo</b><p>Primeira versão funcionando, validada com quem pediu.</p></li>
+        <li><span class="dot">4</span><b>Em uso</b><p>Publicada no hub e ajustada conforme o uso real.</p></li>
+      </ol>
+      <div class="tools">
+        <article class="card tool"><p class="mono">01</p><h3>Triagem de solicitações</h3><p>Pedidos dos clientes chegavam sem etapa nem responsável. A equipe passou a aprovar, pedir informações ou recusar num só lugar.</p><p class="who"><span class="mono">Quem usava</span>Atendimento e gestão</p></article>
+        <article class="card tool"><p class="mono">02</p><h3>Catálogo de serviços</h3><p>Cada cliente contrata um conjunto diferente de serviços. O catálogo define o que aparece no portal de cada um.</p><p class="who"><span class="mono">Quem usava</span>Administração</p></article>
+        <article class="card tool"><p class="mono">03</p><h3>Permissões por colaborador</h3><p>Nem todo colaborador precisa ver tudo. Uma tela define quais serviços cada pessoa da equipe acessa.</p><p class="who"><span class="mono">Quem usava</span>Administração</p></article>
+        <article class="card tool"><p class="mono">04</p><h3>Base de clientes e avisos</h3><p>Status de cada cliente e o grupo de WhatsApp que recebe os avisos automáticos, editados numa tela em vez de planilha.</p><p class="who"><span class="mono">Quem usava</span>Atendimento</p></article>
+        <article class="card tool"><p class="mono">05</p><h3>Configuração dos dashboards</h3><p>Ligar as contas de anúncio de cada cliente aos dashboards sem precisar mexer em código.</p><p class="who"><span class="mono">Quem usava</span>Mídia paga</p></article>
+        <article class="card tool"><p class="mono">06</p><h3>Cadência de follow-up</h3><p>Intervalos e mensagens do follow-up de leads ajustáveis por tela, sem depender de mim a cada mudança.</p><p class="who"><span class="mono">Quem usava</span>Time comercial</p></article>
+      </div>
+    </section>
+
+    <section id="solucoes">
+      <div class="head">
+        <p class="mono"><b>05</b> / Soluções</p>
+        <div class="txt">
+          <h2>Problemas reais e <span class="hl">como resolvi.</span></h2>
+          <p>Cinco situações do dia a dia do projeto, descritas sem detalhes internos.</p>
+        </div>
+      </div>
+      <div class="rows">
+        <article class="row">
+          <span class="idx">01</span>
+          <h3>Consulta que travava com o volume<small>Banco de dados</small></h3>
+          <div class="cell"><span class="mono">Problema</span>A rotina diária fazia uma subconsulta sem índice e lia a tabela inteira para cada lead.</div>
+          <div class="cell"><span class="mono">Solução</span>Li o plano de execução e criei o índice que a subconsulta precisava.</div>
+          <div class="cell res"><span class="mono">Resultado</span>Uma linha lida por lead. A consulta passou a responder em milissegundos.</div>
+        </article>
+        <article class="row">
+          <span class="idx">02</span>
+          <h3>Anexo sem deixar a tarefa pela metade<small>Integração</small></h3>
+          <div class="cell"><span class="mono">Problema</span>Enviar um arquivo envolvia três sistemas sem transação entre eles.</div>
+          <div class="cell"><span class="mono">Solução</span>O arquivo sobe antes de qualquer gravação, e a pasta é criada quando não existe.</div>
+          <div class="cell res"><span class="mono">Resultado</span>Se o envio falha, nada muda. Se dá certo, o cliente já vê o botão do arquivo.</div>
+        </article>
+        <article class="row">
+          <span class="idx">03</span>
+          <h3>Painel rápido com dados lentos<small>Front-end</small></h3>
+          <div class="cell"><span class="mono">Problema</span>Contar pendências dependia de APIs externas e atrasava a tela inicial.</div>
+          <div class="cell"><span class="mono">Solução</span>Contadores carregados depois da tela, com indicador e tempo limite.</div>
+          <div class="cell res"><span class="mono">Resultado</span>A tela abre na hora e o cliente vê o que depende dele.</div>
+        </article>
+        <article class="row">
+          <span class="idx">04</span>
+          <h3>Uma pessoa, várias empresas<small>Modelagem</small></h3>
+          <div class="cell"><span class="mono">Problema</span>Quem respondia por mais de uma empresa precisava de cadastros duplicados.</div>
+          <div class="cell"><span class="mono">Solução</span>Modelei empresa principal com vínculos extras e uma tela para gerenciá-los.</div>
+          <div class="cell res"><span class="mono">Resultado</span>Troca de empresa sem novo login e sem cadastro repetido.</div>
+        </article>
+        <article class="row">
+          <span class="idx">05</span>
+          <h3>Configurações espalhadas em planilhas<small>Processo</small></h3>
+          <div class="cell"><span class="mono">Problema</span>Os avisos automáticos liam planilhas que divergiam do banco.</div>
+          <div class="cell"><span class="mono">Solução</span>Migrei os dados para o banco, editados por uma única tela, e adaptei as automações.</div>
+          <div class="cell res"><span class="mono">Resultado</span>Uma fonte de verdade. Cada aviso chega a quem deve receber.</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="arquitetura" class="band">
+      <div class="head">
+        <p class="mono"><b>06</b> / Arquitetura</p>
+        <div class="txt">
+          <h2>Telas leves, <span class="hl">automação no centro.</span></h2>
+          <p>As telas são HTML e JavaScript puros. Cada ação chama um webhook, e a camada de automação decide o que ler, gravar e avisar em cada sistema.</p>
+        </div>
+      </div>
+      <figure class="arch">
+        <svg viewBox="0 0 1000 410" role="img" aria-labelledby="archT">
+          <title id="archT">Quatro grupos de telas chamam a camada de automação em n8n, que se conecta ao MySQL, ao gestor de tarefas, ao Google Drive, ao WhatsApp, ao CRM de vendas e às plataformas de anúncio</title>
+          <text class="t" x="0" y="18">INTERFACE</text>
+          <text class="t" x="385" y="18">AUTOMAÇÃO</text>
+          <text class="t" x="770" y="18">DADOS E SISTEMAS</text>
+
+          <path class="ln" d="M230 86 C310 86 310 220 385 220"/><path class="pulse" d="M230 86 C310 86 310 220 385 220"/>
+          <path class="ln" d="M230 166 C310 166 310 220 385 220"/><path class="pulse" d="M230 166 C310 166 310 220 385 220"/>
+          <path class="ln" d="M230 246 C310 246 310 220 385 220"/><path class="pulse" d="M230 246 C310 246 310 220 385 220"/>
+          <path class="ln" d="M230 326 C310 326 310 220 385 220"/><path class="pulse" d="M230 326 C310 326 310 220 385 220"/>
+          <path class="ln" d="M615 220 C690 220 690 66 770 66"/><path class="pulse" d="M615 220 C690 220 690 66 770 66"/>
+          <path class="ln" d="M615 220 C690 220 690 128 770 128"/><path class="pulse" d="M615 220 C690 220 690 128 770 128"/>
+          <path class="ln" d="M615 220 C690 220 690 190 770 190"/><path class="pulse" d="M615 220 C690 220 690 190 770 190"/>
+          <path class="ln" d="M615 220 C690 220 690 252 770 252"/><path class="pulse" d="M615 220 C690 220 690 252 770 252"/>
+          <path class="ln" d="M615 220 C690 220 690 314 770 314"/><path class="pulse" d="M615 220 C690 220 690 314 770 314"/>
+          <path class="ln" d="M615 220 C690 220 690 376 770 376"/><path class="pulse" d="M615 220 C690 220 690 376 770 376"/>
+
+          <rect class="pill" x="0" y="60" width="230" height="52" rx="12"/><text class="lab" x="18" y="83">Portal do cliente</text><text class="sub" x="18" y="101">aprovações · solicitações</text>
+          <rect class="pill" x="0" y="140" width="230" height="52" rx="12"/><text class="lab" x="18" y="163">Operação da equipe</text><text class="sub" x="18" y="181">avaliação · cronograma</text>
+          <rect class="pill" x="0" y="220" width="230" height="52" rx="12"/><text class="lab" x="18" y="243">Administração</text><text class="sub" x="18" y="261">acessos · serviços</text>
+          <rect class="pill" x="0" y="300" width="230" height="52" rx="12"/><text class="lab" x="18" y="323">Dashboards</text><text class="sub" x="18" y="341">mídia paga · leads</text>
+
+          <rect class="core" x="385" y="140" width="230" height="160" rx="16"/>
+          <text class="core-t" x="407" y="180">n8n</text>
+          <text class="sub" x="407" y="208">35 webhooks</text>
+          <text class="sub" x="407" y="228">rotinas agendadas</text>
+          <text class="sub" x="407" y="248">autenticação por token</text>
+          <text class="sub" x="407" y="268">regras de negócio</text>
+
+          <rect class="pill" x="770" y="44" width="230" height="44" rx="12"/><text class="lab" x="788" y="71">MySQL</text>
+          <rect class="pill" x="770" y="106" width="230" height="44" rx="12"/><text class="lab" x="788" y="133">Gestor de tarefas</text>
+          <rect class="pill" x="770" y="168" width="230" height="44" rx="12"/><text class="lab" x="788" y="195">Google Drive</text>
+          <rect class="pill" x="770" y="230" width="230" height="44" rx="12"/><text class="lab" x="788" y="257">WhatsApp</text>
+          <rect class="pill" x="770" y="292" width="230" height="44" rx="12"/><text class="lab" x="788" y="319">CRM de vendas</text>
+          <rect class="pill" x="770" y="354" width="230" height="44" rx="12"/><text class="lab" x="788" y="381">Meta Ads · Google Ads</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section id="aprendizados">
+      <div class="head">
+        <p class="mono"><b>07</b> / Aprendizados</p>
+        <div class="txt">
+          <h2>O que levo <span class="hl">deste projeto.</span></h2>
+        </div>
+      </div>
+      <div class="closing">
+        <ul class="card learn">
+          <li><b>Fonte única de verdade vale o esforço</b><p>Tirar configurações de planilhas e levar para o banco eliminou divergências que geravam erros silenciosos.</p></li>
+          <li><b>Integração é cuidar do caminho de erro</b><p>O fluxo que dá certo é metade do trabalho. A outra metade é saber o que acontece quando um serviço não responde.</p></li>
+          <li><b>Ouvir quem usa vem antes de codar</b><p>As melhores funcionalidades nasceram de conversas com a equipe e com clientes.</p></li>
+        </ul>
+        <div class="card stack">
+          <div><p class="mono">Automação</p><p class="tags"><span>n8n (self-hosted)</span><span>Webhooks</span><span>Rotinas agendadas</span><span>JavaScript</span></p></div>
+          <div><p class="mono">Dados</p><p class="tags"><span>MySQL</span><span>Modelagem relacional</span><span>Índices e EXPLAIN</span><span>SQLite</span></p></div>
+          <div><p class="mono">Integrações</p><p class="tags"><span>APIs REST</span><span>OAuth2</span><span>Gestor de tarefas</span><span>CRM</span><span>WhatsApp API</span><span>Google Drive</span><span>Meta Ads</span><span>Google Ads</span></p></div>
+          <div><p class="mono">Interface</p><p class="tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>Chart.js</span></p></div>
+          <div><p class="mono">Qualidade</p><p class="tags"><span>Git</span><span>Testes com navegador headless</span><span>Backup antes de mudar produção</span></p></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <section id="contato">
+    <div class="card contact">
+      <div>
+        <p class="mono"><b style="color: var(--accent); font-weight: 500">08</b> / Contato</p>
+        <h2>Precisa de algo assim na <span class="hl">sua operação?</span></h2>
+        <p class="lead">Automatizo processos, integro sistemas e construo ferramentas internas sob medida. Me conta o que está travando no dia a dia da sua equipe.</p>
+      </div>
+      <div class="clinks">
+        <div class="clink"><span class="mono">E-mail</span><a id="mail" href="mailto:andreq.dev@gmail.com">andreq.dev@gmail.com</a><button type="button" id="copyMail">Copiar</button></div>
+        <div class="clink"><span class="mono">LinkedIn</span><a href="#contato">Perfil no LinkedIn</a><a class="go" href="#contato">Abrir</a></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>André Quinto · Automação e Integrações</span>
+    <span>São Paulo · 2026</span>
+  </footer>
+</div>
+
+<script>
+  // Escala cada tela recriada para caber no espaço disponível, como uma captura de tela.
+  function fitShots() {
+    document.querySelectorAll('.shot').forEach(function (shot) {
+      var ui = shot.firstElementChild;
+      var w = Number(ui.dataset.w);
+      var k = shot.clientWidth / w;
+      ui.style.transform = 'scale(' + k + ')';
+      if (!shot.parentElement.classList.contains('tile-shot')) shot.style.height = (ui.offsetHeight * k) + 'px';
+    });
+  }
+  fitShots();
+  window.addEventListener('resize', fitShots);
+
+  // Copia o e-mail; se o navegador recusar, o endereço continua visível para copiar à mão.
+  document.getElementById('copyMail').addEventListener('click', function () {
+    var btn = this;
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText('andreq.dev@gmail.com').then(function () {
+      btn.textContent = 'Copiado';
+      setTimeout(function () { btn.textContent = 'Copiar'; }, 1800);
+    }).catch(function () {});
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitShots);
+</script>
+</body>
+</html>
